@@ -1,0 +1,558 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Your API",
+    "description": "Movie api",
+    "version": "1.0"
+  },
+  "paths": {
+    "/register": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Registers a new user",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "description": "Username of the user"
+                },
+                "password": {
+                  "type": "string",
+                  "description": "Password of the user"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User created successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Success message"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User already registered",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Logs in a user and generates an access token",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "description": "Username of the user"
+                },
+                "password": {
+                  "type": "string",
+                  "description": "Password of the user"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "access_token": {
+                  "type": "string",
+                  "description": "JWT access token"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/movies": {
+      "get": {
+        "tags": [
+          "Movies"
+        ],
+        "summary": "Get a list of movies with optional filters and pagination",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "integer",
+            "description": "Page number",
+            "default": 1
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "type": "integer",
+            "description": "Number of items per page",
+            "default": 10
+          },
+          {
+            "name": "genre",
+            "in": "query",
+            "type": "string",
+            "description": "Filter by genre"
+          },
+          {
+            "name": "director",
+            "in": "query",
+            "type": "string",
+            "description": "Filter by director"
+          },
+          {
+            "name": "release_year",
+            "in": "query",
+            "type": "integer",
+            "description": "Filter by release year"
+          },
+          {
+            "name": "search_query",
+            "in": "query",
+            "type": "string",
+            "description": "Search query"
+          },
+          {
+            "name": "sort_field",
+            "in": "query",
+            "type": "string",
+            "description": "Sort field",
+            "default": "release_date"
+          },
+          {
+            "name": "sort_direction",
+            "in": "query",
+            "type": "string",
+            "description": "Sort direction",
+            "default": "asc"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of movies",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "movies": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Movie"
+                  }
+                },
+                "page": {
+                  "type": "integer",
+                  "description": "Current page number"
+                },
+                "per_page": {
+                  "type": "integer",
+                  "description": "Items per page"
+                },
+                "total_pages": {
+                  "type": "integer",
+                  "description": "Total number of pages"
+                },
+                "total_items": {
+                  "type": "integer",
+                  "description": "Total number of items"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Movies"
+        ],
+        "summary": "Add a new movie",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Movie"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Movie added successfully"
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/movies/{pk}": {
+      "get": {
+        "tags": [
+          "Movies"
+        ],
+        "summary": "Get details of a specific movie by ID",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "pk",
+            "in": "path",
+            "type": "integer",
+            "description": "ID of the movie",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Details of the movie",
+            "schema": {
+              "$ref": "#/definitions/Movie"
+            }
+          },
+          "404": {
+            "description": "Movie not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Movies"
+        ],
+        "summary": "Update details of a specific movie by ID",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "pk",
+            "in": "path",
+            "type": "integer",
+            "description": "ID of the movie",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Movie"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Movie updated successfully"
+          },
+          "401": {
+            "description": "Access Denied",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Movie not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Movies"
+        ],
+        "summary": "Delete a specific movie by ID",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "pk",
+            "in": "path",
+            "type": "integer",
+            "description": "ID of the movie",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Movie deleted successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Success message"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access Denied",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Movie not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/update_rating/{pk}": {
+      "put": {
+        "tags": [
+          "Rating"
+        ],
+        "summary": "Update the rating of a movie by ID",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "pk",
+            "in": "path",
+            "type": "integer",
+            "description": "ID of the movie",
+            "required": true
+          },
+          {
+            "name": "rating",
+            "in": "query",
+            "type": "number",
+            "format": "float",
+            "description": "New rating for the movie",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rating updated successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Success message"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Movie": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "ID of the movie"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the movie"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the movie"
+        },
+        "release_date": {
+          "type": "string",
+          "format": "date",
+          "description": "Release date of the movie"
+        },
+        "director": {
+          "type": "string",
+          "description": "Director of the movie"
+        },
+        "cast": {
+          "type": "string",
+          "description": "Cast of the movie"
+        },
+        "genre": {
+          "type": "string",
+          "description": "Genre of the movie"
+        },
+        "avg_rating": {
+          "type": "number",
+          "format": "float",
+          "description": "Average rating of the movie"
+        },
+        "ticket_price": {
+          "type": "number",
+          "format": "float",
+          "description": "Ticket price of the movie"
+        }
+      },
+      "required": [
+        "title",
+        "release_date",
+        "avg_rating"
+      ]
+    }
+  },
+  "securityDefinitions": {
+    "JWT": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "Enter the token with the Bearer prefix, e.g. Bearer Token"
+    }
+  },
+  "security": [
+    {
+      "JWT": []
+    }
+  ]
+}
