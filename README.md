@@ -14,3 +14,16 @@ Open a terminal or command prompt and navigate to the "movies-api" folder using 
 
 ```bash
 cd path/to/movies-api
+```
+
+### 3.Run the following commands in windows terminal in order
+```bash
+pip install pipenv
+pipenv install --ignore-pipfile
+./bootstrap.cmd
+```
+
+### 4.Type the following url in browser
+```bash
+http://127.0.0.1:5000/api/docs/
+```
